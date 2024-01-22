@@ -17,6 +17,7 @@ pub struct AoriMakeOrderParams {
 pub struct AoriAuthParams {
     pub address: String,
     pub signature: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub manager: Option<String>,
 }
 

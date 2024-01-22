@@ -29,17 +29,17 @@ pub trait AoriBackendRpc {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{builder::AoriRequestBuilder, AoriBackendRpcClient};
+    use crate::{
+        builder::AoriRequestBuilder, AoriBackendErrors, AoriBackendRpcClient, AoriPingParams,
+    };
     use jsonrpsee::http_client::HttpClientBuilder;
     use tracing::{error, info, Level};
-    use crate::AoriPingParams;
-    use crate::AoriBackendErrors;
 
     #[tokio::test]
     async fn test_ping() {
         let _ = tracing_subscriber::fmt().with_max_level(Level::INFO).init();
 
-        let url = "https://api.aori.io";
+        let url = "https://v2.api.aori.io";
         let client = HttpClientBuilder::default().build(url).unwrap();
 
         let request = AoriPingParams::default();
@@ -62,26 +62,18 @@ mod tests {
     }
     #[tokio::test]
     async fn test_auth() {
+        let url = "https://api.aori.io";
+        let client = HttpClientBuilder::default().build(url).unwrap();
 
-    let url = "https://api.aori.io";
-    let client = HttpClientBuilder::default().build(url).unwrap();
+        // engage request builder here
+        let pkey = "0000000000000000000000000000000000000000000000000000000000000001";
+        let builder = AoriRequestBuilder::new(pkey).unwrap();
+        let request = builder.create_auth_params(None).await.unwrap();
+        println!("{:?}", &request);
 
-    // engage request builder here
-    let pkey = "0000000000000000000000000000000000000000000000000000000000000001";
-    let builder = AoriRequestBuilder::new(pkey).unwrap();
-    let request = builder.create_auth_params(None).await.unwrap();
-    println!("{:?}", &request);
-
-    // Send the ping request
-    let response = client.auth_wallet(request).await; 
-
-    match response {
-        Ok(response) => {
-            info!("Response: {:?}", response);
-        }
-        Err(e) => {
-            error!("Error: {:?}", e);
-        }
-    }
+        // Send the ping request
+        let response = client.auth_wallet(request).await;
+        info!("{:?}", response);
+        assert!(response.is_ok(), "Expected Ok response, got {:?}", response);
     }
 }
