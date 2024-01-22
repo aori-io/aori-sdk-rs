@@ -9,7 +9,9 @@ pub struct AoriMakeOrderParams {
     pub order: AoriOrder,
     pub signature: String,
     pub is_public: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub seat_id: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub tag: Option<String>,
 }
 
@@ -46,21 +48,26 @@ pub struct AoriTakeOrderParams {
     pub order: AoriOrder,
     pub signature: String,
     pub order_hash: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub seat_id: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub signed_approval_tx: Option<String>,
 }
 
 #[derive(Default, Serialize, Deserialize, Debug)]
 pub struct AoriCancelOrderParams {
     pub order_hash: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub signature: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub api_key: Option<String>,
 }
 
 #[derive(Default, Serialize, Deserialize, Debug)]
 pub struct AoriCancelAllOrdersParams {
     pub offerer: String,
-    pub signature: Option<String>,
+    pub signature: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub tag: Option<String>,
 }
 

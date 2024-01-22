@@ -69,7 +69,9 @@ mod tests {
         let pkey = "0000000000000000000000000000000000000000000000000000000000000001";
         let builder = AoriRequestBuilder::new(pkey).unwrap();
         let request = builder.create_auth_params(None).await.unwrap();
-        println!("{:?}", &request);
+
+        let serialized_request = serde_json::to_string(&request).unwrap();
+        info!("Serialized request: {}", serialized_request);
 
         // Send the ping request
         let response = client.auth_wallet(request).await;
