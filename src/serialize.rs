@@ -6,7 +6,7 @@ use alloy_primitives::U256;
 use serde::{Deserialize, Deserializer, Serializer};
 use std::str::FromStr;
 
-pub fn serialize_u256_as_u32<S>(value: &U256, serializer: S) -> Result<S::Ok, S::Error>
+pub fn u256_as_u32<S>(value: &U256, serializer: S) -> Result<S::Ok, S::Error>
 where
     S: Serializer,
 {
@@ -15,7 +15,7 @@ where
     // Serialize the u64 value
     serializer.serialize_u32(value_u32)
 }
-pub fn serialize_u256_as_string<S>(value: &U256, serializer: S) -> Result<S::Ok, S::Error>
+pub fn u256_as_string<S>(value: &U256, serializer: S) -> Result<S::Ok, S::Error>
 where
     S: Serializer,
 {
@@ -25,7 +25,7 @@ where
     serializer.serialize_str(&value_string)
 }
 // Deserialization function for U256 from a u64
-pub fn deserialize_u256_from_u32<'de, D>(deserializer: D) -> Result<U256, D::Error>
+pub fn u256_from_u32<'de, D>(deserializer: D) -> Result<U256, D::Error>
 where
     D: Deserializer<'de>,
 {
@@ -34,7 +34,7 @@ where
 }
 
 // Deserialization function for U256 from a String
-pub fn deserialize_u256_from_string<'de, D>(deserializer: D) -> Result<U256, D::Error>
+pub fn u256_from_string<'de, D>(deserializer: D) -> Result<U256, D::Error>
 where
     D: Deserializer<'de>,
 {
