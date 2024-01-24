@@ -150,6 +150,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "alloy_serde_macro"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "46b52e5e6b696ae4895946729b9f8a181fdcda0c6c1737460d8061b9fd3d3c7a"
+dependencies = [
+ "alloy-primitives",
+ "paste",
+ "serde",
+]
+
+[[package]]
 name = "anyhow"
 version = "1.0.79"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -162,6 +173,7 @@ dependencies = [
  "alloy-primitives",
  "alloy-signer",
  "alloy-sol-types",
+ "alloy_serde_macro",
  "anyhow",
  "futures",
  "hex",

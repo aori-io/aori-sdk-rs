@@ -1,4 +1,4 @@
-use crate::*;
+use alloy_serde_macro::{U256_as_String, U256_as_u32, U256_from_String, U256_from_u32};
 use alloy_sol_types::sol;
 use serde::{Deserialize, Serialize};
 
@@ -8,27 +8,61 @@ sol!(
         address offerer;
         // input
         address inputToken;
-        #[serde(serialize_with = "u256_as_string", deserialize_with = "u256_from_string")]
+        #[serde(serialize_with = "U256_as_String", deserialize_with = "U256_from_String")]
         uint256 inputAmount;
-        #[serde(serialize_with = "u256_as_u32", deserialize_with = "u256_from_u32")]
+        #[serde(serialize_with = "U256_as_u32", deserialize_with = "U256_from_u32")]
         uint256 inputChainId;
         address inputZone;
         // output
         address outputToken;
-        #[serde(serialize_with = "u256_as_string", deserialize_with = "u256_from_string")]
+        #[serde(serialize_with = "U256_as_String", deserialize_with = "U256_from_String")]
         uint256 outputAmount;
-        #[serde(serialize_with = "u256_as_u32", deserialize_with = "u256_from_u32")]
+        #[serde(serialize_with = "U256_as_u32", deserialize_with = "U256_from_u32")]
         uint256 outputChainId;
         address outputZone;
         // other
-        #[serde(serialize_with = "u256_as_string", deserialize_with = "u256_from_string")]
+        #[serde(serialize_with = "U256_as_String", deserialize_with = "U256_from_String")]
         uint256 startTime;
-        #[serde(serialize_with = "u256_as_string", deserialize_with = "u256_from_string")]
+        #[serde(serialize_with = "U256_as_String", deserialize_with = "U256_from_String")]
         uint256 endTime;
         uint256 salt;
-        #[serde(serialize_with = "u256_as_u32", deserialize_with = "u256_from_u32")]
+        #[serde(serialize_with = "U256_as_u32", deserialize_with = "U256_from_u32")]
         uint256 counter;
         bool toWithdraw;
+    }
+    #[derive(Default, Debug, Deserialize, Serialize)]
+    struct OrderView {
+        AoriOrder order;
+        bytes32 orderHash;
+        string inputToken;
+        string inputAmount;
+        uint32 inputChainId;
+        string outputToken;
+        string outputAmount;
+        uint32 outputChainId;
+        uint32 rate;
+        uint256 createdAt;
+        bool isPublic;
+    }
+    #[derive(Default, Debug, Deserialize, Serialize)]
+    struct Query {
+        address base;
+        address quote;
+    }
+
+    #[derive(Debug, Deserialize, Serialize)]
+    enum SortBy { createdAtAsc, createdAtDesc, rateAsc, rateDesc }
+
+    #[derive(Debug, Deserialize, Serialize)]
+    struct ViewOrderbookQuery {
+        bytes signature;
+        address offerer;
+        bytes32 orderHash;
+        Query query;
+        uint256 chainId;
+        SortBy sortBy;
+        uint256 inputAmount;
+        uint256 outputAmount;
     }
 );
 
