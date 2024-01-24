@@ -1,4 +1,7 @@
-use alloy_serde_macro::{U256_as_String, U256_as_u32, U256_from_String, U256_from_u32};
+use alloy_serde_macro::{
+    bytes_as_string, bytes_from_string, U256_as_String, U256_as_u32, U256_from_String,
+    U256_from_u32,
+};
 use alloy_sol_types::sol;
 use serde::{Deserialize, Serialize};
 
@@ -33,21 +36,26 @@ sol!(
     #[derive(Default, Debug, Deserialize, Serialize)]
     struct OrderView {
         AoriOrder order;
+
         bytes32 orderHash;
-        string inputToken;
-        string inputAmount;
-        uint32 inputChainId;
-        string outputToken;
-        string outputAmount;
-        uint32 outputChainId;
-        uint32 rate;
+
+        address inputToken;
+        uint256 inputAmount;
+        uint256 inputChainId;
+
+        address outputToken;
+        uint256 outputAmount;
+        uint256 outputChainId;
+
+        string rate;
         uint256 createdAt;
         bool isPublic;
     }
     #[derive(Default, Debug, Deserialize, Serialize)]
     struct Query {
         address base;
-        address quote;
+        #[serde(serialize_with = "U256_as_String", deserialize_with = "U256_from_String")]
+        uint256 quote;
     }
 
     #[derive(Debug, Deserialize, Serialize)]
@@ -55,13 +63,20 @@ sol!(
 
     #[derive(Debug, Deserialize, Serialize)]
     struct ViewOrderbookQuery {
+        #[serde(serialize_with = "bytes_as_string", deserialize_with = "bytes_from_string")]
         bytes signature;
         address offerer;
         bytes32 orderHash;
+
         Query query;
+        #[serde(serialize_with = "U256_as_u32")]
         uint256 chainId;
+
         SortBy sortBy;
+
+        #[serde(serialize_with = "U256_as_String")]
         uint256 inputAmount;
+        #[serde(serialize_with = "U256_as_String")]
         uint256 outputAmount;
     }
 );
@@ -70,10 +85,13 @@ sol!(
 mod tests {
     use super::*;
     use alloy_primitives::{keccak256, Address, U256};
+    use alloy_signer::{Signer, SignerSync, Wallet};
     use alloy_sol_types::SolValue;
+    use k256::ecdsa::SigningKey;
     use serde_json;
+
     #[test]
-    fn sign_order() {
+    fn hash_order() {
         let order = AoriOrder {
             offerer: "0x0000000000000000000000000000000000000001".parse::<Address>().unwrap(),
             inputToken: "0x0000000000000000000000000000000000000002".parse::<Address>().unwrap(),
@@ -125,5 +143,35 @@ mod tests {
         // Deserialize the order
         let deserialized: AoriOrder = serde_json::from_str(&serialized).unwrap();
         println!("Deserialized AoriOrder: {:?}", deserialized);
+    }
+
+    #[test]
+    fn serialize_view_orderbook_query() {
+        // hash wallet address and sign first
+        let key = Wallet::<SigningKey>::random_with(&mut rand::thread_rng());
+        let address = key.address().to_string();
+        let signature = key.sign_message_sync(address.as_bytes()).unwrap();
+
+        let query = ViewOrderbookQuery {
+            signature: signature.into(),
+            offerer: "0x0000000000000000000000000000000000000001".parse::<Address>().unwrap(),
+            orderHash: alloy_primitives::FixedBytes([0u8; 32]), /* Assuming a 32-byte order hash
+                                                                 * placeholder */
+            query: Query {
+                base: "0x0000000000000000000000000000000000000002".parse::<Address>().unwrap(),
+                quote: U256::from(3000000000000000000_u64),
+            },
+            chainId: U256::from(1),
+            sortBy: SortBy::createdAtAsc,
+            inputAmount: U256::from(1000000000000000000_u64),
+            outputAmount: U256::from(2000000000000000000_u64),
+        };
+
+        let serialized = serde_json::to_string(&query).unwrap();
+        println!("Serialized ViewOrderbookQuery: {}", serialized);
+
+        // Deserialize the query
+        let deserialized: ViewOrderbookQuery = serde_json::from_str(&serialized).unwrap();
+        println!("Deserialized ViewOrderbookQuery: {:?}", deserialized);
     }
 }

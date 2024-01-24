@@ -23,21 +23,6 @@ pub struct AoriAuthParams {
     pub manager: Option<String>,
 }
 
-// #[derive(Default, Serialize, Deserialize, Debug)]
-// pub struct AoriViewOrderbookParams {
-//     pub signature: Option<String>,
-//     pub chain_id: Option<i64>,
-//     pub query: Option<HashMap<String, String>>,
-//     pub side: Option<String>,
-//     pub limit: Option<i64>,
-//     pub previous_order_hash: Option<String>,
-//     pub order_hash: Option<String>,
-//     pub offerer: Option<String>,
-//     pub sort_by: Option<String>,
-//     pub input_amount: Option<String>,
-//     pub output_amount: Option<String>,
-// }
-
 #[derive(Default, Serialize, Deserialize, Debug)]
 pub struct AoriCheckAuthParams {
     pub auth: String,
