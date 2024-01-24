@@ -57,4 +57,25 @@ impl AoriRequestBuilder {
             tag: Some(tag),
         })
     }
+    pub async fn take_order(
+        &self,
+        order: AoriOrder,
+        order_hash: &str,
+        seat_id: i64,
+    ) -> Result<AoriTakeOrderParams, Box<dyn std::error::Error>> {
+        let packed = order.abi_encode();
+        let hash = keccak256(packed);
+
+        let signature = self.signer.sign_hash(hash).await?;
+        let sig = signature.as_bytes();
+        let sig_hex = hex::encode(sig);
+
+        Ok(AoriTakeOrderParams {
+            order,
+            signature: format!("0x{}", sig_hex),
+            order_hash: order_hash.to_string(),
+            seat_id: Some(seat_id),
+            signed_approval_tx: None,
+        })
+    }
 }
