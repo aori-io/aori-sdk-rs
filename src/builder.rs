@@ -1,8 +1,10 @@
 // request builder
 // used for signing orders and stuff
 
-use crate::request::*;
+use crate::{request::*, AoriOrder};
+use alloy_primitives::keccak256;
 use alloy_signer::{Signer, Wallet};
+use alloy_sol_types::SolValue;
 use k256::ecdsa::SigningKey;
 use nom::AsBytes;
 
@@ -31,6 +33,28 @@ impl AoriRequestBuilder {
                                                  * chain ids */
             signature: format!("0x{}", sig_hex),
             manager,
+        })
+    }
+    pub async fn make_order(
+        &self,
+        order: AoriOrder,
+        is_public: bool,
+        seat_id: i64,
+        tag: String,
+    ) -> Result<AoriMakeOrderParams, Box<dyn std::error::Error>> {
+        let packed = order.abi_encode();
+        let hash = keccak256(packed);
+
+        let signature = self.signer.sign_hash(hash).await?;
+        let sig = signature.as_bytes();
+        let sig_hex = hex::encode(sig);
+
+        Ok(AoriMakeOrderParams {
+            order,
+            signature: format!("0x{}", sig_hex),
+            is_public: Some(is_public),
+            seat_id: Some(seat_id),
+            tag: Some(tag),
         })
     }
 }

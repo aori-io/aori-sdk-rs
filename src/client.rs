@@ -18,13 +18,14 @@ pub trait AoriBackendRpc {
     #[method(name = "aori_makeOrder")]
     async fn make_order(&self, parameters: AoriMakeOrderParams) -> RpcResult<OrderView>;
     #[method(name = "aori_takeOrder")]
-    async fn take_order(&self, parameters: AoriTakeOrderParams) -> RpcResult<DetailsToExecute>;
+    async fn take_order(&self, parameters: AoriTakeOrderParams) -> RpcResult<()>;
     // aori_quote
     #[method(name = "aori_viewOrderbook")]
-    async fn view_orderbook(
-        &self,
-        parameters: AoriViewOrderbookParams,
-    ) -> RpcResult<Vec<OrderView>>;
+    async fn view_orderbook(&self, parameters: ViewOrderbookQuery) -> RpcResult<Vec<OrderView>>;
+
+    // feed later, preferably in a separate aori-stream-rs
+    // #[subscription(name = "aori_subscribeOrderbook", item = AoriSubscriptionEvent)]
+    // async fn subscribe(&self, parameters:) -> RpcResult<()>;
 }
 #[cfg(test)]
 mod tests {
