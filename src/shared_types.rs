@@ -3,7 +3,7 @@ use alloy_serde_macro::{
     U256_from_u32,
 };
 use alloy_sol_types::sol;
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Serialize, Deserializer};
 
 sol!(
     #[derive(Default, Debug, Deserialize, Serialize)]
@@ -28,6 +28,7 @@ sol!(
         uint256 startTime;
         #[serde(serialize_with = "U256_as_String", deserialize_with = "U256_from_String")]
         uint256 endTime;
+        #[serde(serialize_with = "U256_as_String", deserialize_with = "U256_from_String")]
         uint256 salt;
         #[serde(serialize_with = "U256_as_u32", deserialize_with = "U256_from_u32")]
         uint256 counter;
@@ -47,6 +48,7 @@ sol!(
         uint256 outputAmount;
         uint256 outputChainId;
 
+        #[serde(deserialize_with = "deserialize_rate")]
         string rate;
         uint256 createdAt;
         bool isPublic;
@@ -80,7 +82,13 @@ sol!(
         uint256 outputAmount;
     }
 );
-
+pub fn deserialize_rate<'de, D>(deserializer: D) -> Result<String, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    let rate: f64 = Deserialize::deserialize(deserializer)?;
+    Ok(rate.to_string())
+}
 #[cfg(test)]
 mod tests {
     use super::*;

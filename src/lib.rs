@@ -4,7 +4,9 @@ pub mod error;
 pub mod request;
 pub mod response;
 pub mod shared_types;
+pub mod feed;
 
+pub use feed::*;
 pub use client::AoriBackendRpcClient;
 pub use error::AoriBackendErrors;
 pub use request::*;

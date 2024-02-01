@@ -27,6 +27,13 @@ pub trait AoriBackendRpc {
     // #[subscription(name = "aori_subscribeOrderbook", item = AoriSubscriptionEvent)]
     // async fn subscribe(&self, parameters:) -> RpcResult<()>;
 }
+
+// #[rpc(client)]
+// pub trait AoriMatchingEngine {
+//     #[method(name = "aori_takeOrder")]
+//     async fn take_order(&self, parameters: AoriTakeOrderParams) -> RpcResult<()>;
+// }
+
 #[cfg(test)]
 mod tests {
     use super::*;

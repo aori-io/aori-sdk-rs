@@ -51,10 +51,11 @@ impl AoriRequestBuilder {
 
         Ok(AoriMakeOrderParams {
             order,
-            signature: format!("0x{}", sig_hex),
+            signature: format!("0x{}", sig_hex).into(),
             is_public: Some(is_public),
             seat_id: Some(seat_id),
             tag: Some(tag),
+            api_key: None,
         })
     }
     pub async fn take_order(
@@ -72,7 +73,7 @@ impl AoriRequestBuilder {
 
         Ok(AoriTakeOrderParams {
             order,
-            signature: format!("0x{}", sig_hex),
+            signature: format!("0x{}", sig_hex).into(),
             order_hash: order_hash.to_string(),
             seat_id: Some(seat_id),
             signed_approval_tx: None,
