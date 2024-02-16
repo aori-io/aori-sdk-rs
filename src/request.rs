@@ -1,6 +1,6 @@
 use crate::shared_types::AoriOrder;
-use serde::{Deserialize, Serialize};
 use alloy_serde_macro::bytes_as_string;
+use serde::{Deserialize, Serialize};
 
 #[derive(Default, Serialize, Deserialize, Debug)]
 pub struct AoriPingParams(String);
@@ -16,7 +16,7 @@ pub struct AoriMakeOrderParams {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub tag: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none", rename = "apiKey")]
-    pub api_key: Option<String>, 
+    pub api_key: Option<String>,
 }
 
 #[derive(Default, Serialize, Deserialize, Debug)]

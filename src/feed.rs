@@ -1,11 +1,11 @@
+use crate::shared_types::AoriOrder;
 use alloy_primitives::U256;
-use serde::{Deserialize, Serialize};
-use crate::shared_types::{AoriOrder, deserialize_rate};
 use alloy_serde_macro::U256_from_u64;
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Deserialize, Clone)]
 pub struct AoriFeedEventWrapper {
-    pub id: Option<String>, 
+    pub id: Option<String>,
     pub result: AoriFeedEvents,
 }
 
@@ -13,7 +13,7 @@ pub struct AoriFeedEventWrapper {
 #[serde(tag = "type", content = "data")]
 pub enum AoriFeedEvents {
     OrderToExecute(Box<OrderToExecuteData>),
-    QuoteRequested(Box<QuoteRequestedData>)
+    QuoteRequested(Box<QuoteRequestedData>),
 }
 #[derive(Clone, Serialize, Deserialize, PartialEq, Debug)]
 #[serde(rename_all = "camelCase")]
@@ -23,7 +23,7 @@ pub struct QuoteRequestedData {
     pub input_amount: String,
     pub chain_id: u64,
 }
-#[derive(Debug,Clone, Deserialize, Serialize)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct OrderToExecuteData {
     pub matching_hash: String,
@@ -37,7 +37,7 @@ pub struct OrderToExecuteData {
     pub taker_zone: String,
     pub chain_id: u64,
     pub to: String,
-    #[serde(deserialize_with="U256_from_u64")]
+    #[serde(deserialize_with = "U256_from_u64")]
     pub value: U256,
     pub data: String,
     pub maker: String,

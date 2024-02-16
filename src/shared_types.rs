@@ -3,7 +3,7 @@ use alloy_serde_macro::{
     U256_from_u32,
 };
 use alloy_sol_types::sol;
-use serde::{Deserialize, Serialize, Deserializer};
+use serde::{Deserialize, Deserializer, Serialize};
 
 sol!(
     #[derive(Default, Debug, Deserialize, Serialize)]
