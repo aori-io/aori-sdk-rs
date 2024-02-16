@@ -6,7 +6,7 @@ pub trait AoriBackendRpc {
     #[method(name = "aori_ping")]
     async fn ping(&self, parameters: AoriPingParams) -> RpcResult<AoriPingResponse>;
     #[method(name = "aori_requestQuote")]
-    async fn request_quote(&self, parameters: AoriRequestQuoteParams) -> RpcResult<()>;
+    async fn request_quote(&self, parameters: AoriRequestQuoteParams) -> RpcResult<String>;
     #[method(name = "aori_cancelOrder")]
     async fn cancel_order(&self, parameters: AoriCancelOrderParams) -> RpcResult<String>;
     #[method(name = "aori_cancelAllOrders")]
@@ -18,7 +18,7 @@ pub trait AoriBackendRpc {
     #[method(name = "aori_makeOrder")]
     async fn make_order(&self, parameters: AoriMakeOrderParams) -> RpcResult<OrderView>;
     #[method(name = "aori_takeOrder")]
-    async fn take_order(&self, parameters: AoriTakeOrderParams) -> RpcResult<()>;
+    async fn take_order(&self, parameters: AoriTakeOrderParams) -> RpcResult<String>;
     // aori_quote
     // #[method(name = "aori_viewOrderbook")]
     // async fn view_orderbook(&self, parameters: ViewOrderbookQuery) -> RpcResult<Vec<OrderView>>;
@@ -69,6 +69,30 @@ mod tests {
         }
     }
     #[tokio::test]
+    async fn test_rfq() {
+        let url = "https://v2.api.aori.io";
+        let client = HttpClientBuilder::default().build(url).unwrap();
+
+        let pkey = "0000000000000000000000000000000000000000000000000000000000000001";
+        let builder = AoriRequestBuilder::new(pkey).unwrap();
+
+        let input_token = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2".to_string();
+        let output_token = "0xe3DBC4F88EAa632DDF9708732E2832EEaA6688AB".to_string();
+        let input_amount = Some("1000000000000000000".to_string());
+        let output_amount = None;
+        let chain_id = 42161;
+        let api_key = "test".to_string();
+
+        let request = builder
+            .build_rfq(input_token, output_token, input_amount, output_amount, chain_id, api_key)
+            .await
+            .unwrap();
+
+        let response = client.request_quote(request).await;
+        info!("RFQ RESPONSE: {:?}", response);
+        assert!(response.is_ok(), "Expected Ok response, got {:?}", response);
+    }
+    #[tokio::test]
     async fn test_auth() {
         let url = "https://api.aori.io";
         let client = HttpClientBuilder::default().build(url).unwrap();
@@ -83,7 +107,7 @@ mod tests {
 
         // Send the ping request
         let response = client.auth_wallet(request).await;
-        info!("{:?}", response);
+        info!("auth response: {:?}", response);
         assert!(response.is_ok(), "Expected Ok response, got {:?}", response);
     }
 }

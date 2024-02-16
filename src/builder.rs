@@ -35,6 +35,24 @@ impl AoriRequestBuilder {
             manager,
         })
     }
+    pub async fn build_rfq(
+        &self,
+        input_token: String,
+        output_token: String,
+        input_amount: Option<String>,
+        output_amount: Option<String>,
+        chain_id: i64,
+        api_key: String,
+    ) -> Result<AoriRequestQuoteParams, Box<dyn std::error::Error>> {
+        Ok(AoriRequestQuoteParams {
+            input_token,
+            output_token,
+            input_amount,
+            output_amount,
+            chain_id,
+            api_key,
+        })
+    }
     pub async fn make_order(
         &self,
         order: AoriOrder,
