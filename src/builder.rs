@@ -47,7 +47,7 @@ impl AoriRequestBuilder {
         Ok(AoriRequestQuoteParams {
             input_token,
             output_token,
-            input_amount,
+            input_amount: input_amount.unwrap(),
             output_amount,
             chain_id,
             api_key,

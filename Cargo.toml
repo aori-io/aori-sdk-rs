@@ -10,6 +10,7 @@ alloy-sol-types = "0.6.0"
 # alloy_serde_macro = "0.1.1"
 alloy_serde_macro = "0.1.2"
 anyhow = "1.0.79"
+chrono = { version = "0.4", features = ["serde"] }
 futures = "0.3"
 hex = "0.4.3"
 hyper = "0.14.20"
