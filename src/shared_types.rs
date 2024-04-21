@@ -39,21 +39,26 @@ sol!(
     struct OrderView {
         AoriOrder order;
         bytes32 orderHash;
+        address maker;
+        address taker;
         address inputToken;
-        #[serde(serialize_with = "U256_as_String", deserialize_with = "U256_from_String")]
         uint256 inputAmount;
-        #[serde(serialize_with = "U256_as_u32", deserialize_with = "U256_from_u32")]
         uint256 inputChainId;
-        address outputToken;
-        #[serde(serialize_with = "U256_as_String", deserialize_with = "U256_from_String")]
+        address outputToken; 
         uint256 outputAmount;
-        #[serde(serialize_with = "U256_as_u32", deserialize_with = "U256_from_u32")]
         uint256 outputChainId;
-        #[serde(deserialize_with = "deserialize_rate")]
         string rate;
-        #[serde(serialize_with = "U256_as_String", deserialize_with = "U256_from_String")]
         uint256 createdAt;
+        uint256 updatedAt;
         bool isPublic;
+        bool isTaken;
+        bool isCancelled;
+        address offerer;
+        uint256 startTime;
+        uint256 endTime;
+        uint256 salt;
+        uint256 counter;
+        bool toWithdraw;
     }
 
     #[derive(Default, Debug, Deserialize, Serialize)]
@@ -114,9 +119,7 @@ sol!(
         #[serde(serialize_with = "U256_as_String", deserialize_with = "U256_from_String")]
         uint256 outputAmount;
         #[serde(serialize_with = "U256_as_u32", deserialize_with = "U256_from_u32")]
-        uint256 inputChainId;
-        #[serde(serialize_with = "U256_as_u32", deserialize_with = "U256_from_u32")]
-        uint256 outputChainId;
+        uint256 chainId;
     }
 );
 

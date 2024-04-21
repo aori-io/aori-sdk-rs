@@ -72,11 +72,15 @@ pub struct AoriViewOrderbookParams {
     #[serde(skip_serializing_if = "Option::is_none", rename = "chainId")]
     pub chain_id: Option<i64>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub query: Option<Query>,
+    pub base: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")] 
+    pub quote: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub side: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub limit: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub offset: Option<i64>,
     #[serde(rename = "apiKey")]
     pub api_key: String,
 }
@@ -87,14 +91,10 @@ pub struct AoriRequestQuoteParams {
     pub input_token: String,
     #[serde(rename = "outputToken")]
     pub output_token: String,
-    #[serde(skip_serializing_if = "Option::is_none", rename = "inputAmount")]
-    pub input_amount: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none", rename = "outputAmount")]
-    pub output_amount: Option<String>,
-    #[serde(rename = "inputChainId")]
-    pub input_chain_id: i64,
-    #[serde(rename = "outputChainId")]
-    pub output_chain_id: i64,
+    #[serde(rename = "inputAmount")]
+    pub input_amount: String,
+    #[serde(rename = "chainId")]
+    pub chain_id: u64,
     #[serde(rename = "apiKey")]
     pub api_key: String,
 }

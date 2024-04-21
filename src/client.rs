@@ -81,10 +81,8 @@ mod tests {
     
         let input_token = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2".to_string();
         let output_token = "0xe3DBC4F88EAa632DDF9708732E2832EEaA6688AB".to_string();
-        let input_amount = Some("1000000000000000000".to_string());
-        let output_amount = None;
-        let input_chain_id = 1; // Updated to a valid chain ID (e.g., Ethereum mainnet)
-        let output_chain_id = 1; // Updated to a valid chain ID (e.g., Ethereum mainnet)
+        let input_amount = "1000000000000000000".to_string();
+        let chain_id = 1;
         let api_key = "test".to_string();
     
         let request = builder
@@ -92,9 +90,7 @@ mod tests {
                 input_token,
                 output_token,
                 input_amount,
-                output_amount,
-                input_chain_id,
-                output_chain_id,
+                chain_id,
                 api_key,
             )
             .await

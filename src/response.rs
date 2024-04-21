@@ -20,8 +20,9 @@ pub struct AoriAccountBalanceResponse {
 }
 
 #[derive(Default, Serialize, Deserialize, Debug)]
-pub struct AoriViewOrderbookResponse {
+pub struct AoriViewOrderbookResponse { 
     pub orders: Vec<OrderView>,
+    pub count: i64,
 }
 
 #[derive(Default, Serialize, Deserialize, Debug)]
@@ -46,5 +47,18 @@ pub struct AoriRequestQuoteResponse {
 
 #[derive(Default, Serialize, Deserialize, Debug)]
 pub struct AoriQuoteResponse {
+    #[serde(rename = "inputToken")]
+    pub input_token: String,
+    #[serde(rename = "outputToken")]
+    pub output_token: String,
+    #[serde(rename = "inputAmount")]
+    pub input_amount: String,
+    #[serde(rename = "outputAmount")]
+    pub output_amount: String,
+    #[serde(rename = "gasCost")]
+    pub gas_cost: String,
+    pub price: String,
+    #[serde(rename = "expirationTimestampInSeconds")]
+    pub expiration_timestamp_in_seconds: String,
     pub orders: Vec<OrderView>,
 }

@@ -37,19 +37,15 @@ impl AoriRequestBuilder {
         &self,
         input_token: String,
         output_token: String,
-        input_amount: Option<String>,
-        output_amount: Option<String>,
-        input_chain_id: i64,
-        output_chain_id: i64,
+        input_amount: String,
+        chain_id: u64,
         api_key: String,
     ) -> Result<AoriRequestQuoteParams, Box<dyn std::error::Error>> {
         Ok(AoriRequestQuoteParams {
             input_token,
             output_token,
             input_amount,
-            output_amount,
-            input_chain_id,
-            output_chain_id,
+            chain_id,
             api_key,
         })
     }
