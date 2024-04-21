@@ -6,7 +6,7 @@ use alloy_sol_types::sol;
 use serde::{Deserialize, Deserializer, Serialize};
 
 sol!(
-    #[derive(Default, Debug, Deserialize, Serialize)]
+    #[derive(Default, Debug, Deserialize, Serialize, PartialEq)]
     struct AoriOrder {
         address offerer;
         // input
@@ -34,30 +34,32 @@ sol!(
         uint256 counter;
         bool toWithdraw;
     }
-    #[derive(Default, Debug, Deserialize, Serialize)]
+
+    #[derive(Default, Debug, Deserialize, Serialize, PartialEq)]
     struct OrderView {
         AoriOrder order;
-
         bytes32 orderHash;
-
         address inputToken;
+        #[serde(serialize_with = "U256_as_String", deserialize_with = "U256_from_String")]
         uint256 inputAmount;
+        #[serde(serialize_with = "U256_as_u32", deserialize_with = "U256_from_u32")]
         uint256 inputChainId;
-
         address outputToken;
+        #[serde(serialize_with = "U256_as_String", deserialize_with = "U256_from_String")]
         uint256 outputAmount;
+        #[serde(serialize_with = "U256_as_u32", deserialize_with = "U256_from_u32")]
         uint256 outputChainId;
-
         #[serde(deserialize_with = "deserialize_rate")]
         string rate;
+        #[serde(serialize_with = "U256_as_String", deserialize_with = "U256_from_String")]
         uint256 createdAt;
         bool isPublic;
     }
+
     #[derive(Default, Debug, Deserialize, Serialize)]
     struct Query {
         address base;
-        #[serde(serialize_with = "U256_as_String", deserialize_with = "U256_from_String")]
-        uint256 quote;
+        address quote;
     }
 
     #[derive(Debug, Deserialize, Serialize)]
@@ -65,23 +67,59 @@ sol!(
 
     #[derive(Debug, Deserialize, Serialize)]
     struct ViewOrderbookQuery {
-        #[serde(serialize_with = "bytes_as_string", deserialize_with = "bytes_from_string")]
-        bytes signature;
-        address offerer;
-        bytes32 orderHash;
-
-        Query query;
         #[serde(serialize_with = "U256_as_u32")]
         uint256 chainId;
-
+        Query query;
+        string side;
+        #[serde(serialize_with = "U256_as_String", deserialize_with = "U256_from_String")]
+        uint256 amount;
         SortBy sortBy;
+        #[serde(serialize_with = "U256_as_u32", deserialize_with = "U256_from_u32")]
+        uint256 page;
+        #[serde(serialize_with = "U256_as_u32", deserialize_with = "U256_from_u32")]
+        uint256 perPage;
+    }
 
-        #[serde(serialize_with = "U256_as_String")]
+    #[derive(Debug, Deserialize, Serialize)]
+    struct MakeOrderQuery {
+        #[serde(serialize_with = "bytes_as_string", deserialize_with = "bytes_from_string")]
+        bytes signature;
+        AoriOrder order;
+    }
+
+    #[derive(Debug, Deserialize, Serialize)]
+    struct TakeOrderQuery {
+        #[serde(serialize_with = "bytes_as_string", deserialize_with = "bytes_from_string")]
+        bytes signature;
+        bytes32 orderHash;
+        #[serde(serialize_with = "U256_as_String", deserialize_with = "U256_from_String")]
+        uint256 amount;
+    }
+
+    #[derive(Debug, Deserialize, Serialize)]
+    struct CancelOrderQuery {
+        #[serde(serialize_with = "bytes_as_string", deserialize_with = "bytes_from_string")]
+        bytes signature;
+        bytes32 orderHash;
+    }
+
+    #[derive(Debug, Deserialize, Serialize)]
+    struct RequestForQuoteQuery {
+        #[serde(serialize_with = "bytes_as_string", deserialize_with = "bytes_from_string")]
+        bytes signature;
+        address inputToken;
+        address outputToken;
+        #[serde(serialize_with = "U256_as_String", deserialize_with = "U256_from_String")]
         uint256 inputAmount;
-        #[serde(serialize_with = "U256_as_String")]
+        #[serde(serialize_with = "U256_as_String", deserialize_with = "U256_from_String")]
         uint256 outputAmount;
+        #[serde(serialize_with = "U256_as_u32", deserialize_with = "U256_from_u32")]
+        uint256 inputChainId;
+        #[serde(serialize_with = "U256_as_u32", deserialize_with = "U256_from_u32")]
+        uint256 outputChainId;
     }
 );
+
 pub fn deserialize_rate<'de, D>(deserializer: D) -> Result<String, D::Error>
 where
     D: Deserializer<'de>,
@@ -89,6 +127,8 @@ where
     let rate: f64 = Deserialize::deserialize(deserializer)?;
     Ok(rate.to_string())
 }
+
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -161,18 +201,16 @@ mod tests {
         let signature = key.sign_message_sync(address.as_bytes()).unwrap();
 
         let query = ViewOrderbookQuery {
-            signature: signature.into(),
-            offerer: "0x0000000000000000000000000000000000000001".parse::<Address>().unwrap(),
-            orderHash: alloy_primitives::FixedBytes([0u8; 32]), /* Assuming a 32-byte order hash
-                                                                 * placeholder */
+            chainId: U256::from(1),
             query: Query {
                 base: "0x0000000000000000000000000000000000000002".parse::<Address>().unwrap(),
-                quote: U256::from(3000000000000000000_u64),
+                quote: "0x0000000000000000000000000000000000000003".parse::<Address>().unwrap(),
             },
-            chainId: U256::from(1),
+            side: "buy".to_string(),
+            amount: U256::from(1000000000000000000_u64),
             sortBy: SortBy::createdAtAsc,
-            inputAmount: U256::from(1000000000000000000_u64),
-            outputAmount: U256::from(2000000000000000000_u64),
+            page: U256::from(1),
+            perPage: U256::from(10),
         };
 
         let serialized = serde_json::to_string(&query).unwrap();

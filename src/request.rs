@@ -1,4 +1,4 @@
-use crate::shared_types::AoriOrder;
+use crate::shared_types::{AoriOrder, Query};
 use alloy_serde_macro::bytes_as_string;
 use serde::{Deserialize, Serialize};
 
@@ -10,11 +10,10 @@ pub struct AoriMakeOrderParams {
     pub order: AoriOrder,
     #[serde(serialize_with = "bytes_as_string")]
     pub signature: Vec<u8>,
+    #[serde(rename = "isPublic")]
     pub is_public: Option<bool>,
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none", rename = "seatId")]
     pub seat_id: Option<i64>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub tag: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none", rename = "apiKey")]
     pub api_key: Option<String>,
 }
@@ -34,63 +33,52 @@ pub struct AoriCheckAuthParams {
 
 #[derive(Default, Serialize, Deserialize, Debug)]
 pub struct AoriTakeOrderParams {
+    #[serde(rename = "orderHash")]
+    pub order_hash: String,
     pub order: AoriOrder,
     #[serde(serialize_with = "bytes_as_string")]
     pub signature: Vec<u8>,
-    #[serde(rename = "orderHash")]
-    pub order_hash: String,
     #[serde(skip_serializing_if = "Option::is_none", rename = "seatId")]
     pub seat_id: Option<i64>,
-    #[serde(skip_serializing_if = "Option::is_none", rename = "signedApprovalTx")]
-    pub signed_approval_tx: Option<String>,
-}
-
-#[derive(Default, Serialize, Deserialize, Debug)]
-pub struct AoriCancelOrderParams {
-    pub order_hash: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub signature: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none", rename = "apiKey")]
     pub api_key: Option<String>,
 }
 
 #[derive(Default, Serialize, Deserialize, Debug)]
-pub struct AoriCancelAllOrdersParams {
-    pub offerer: String,
-    pub signature: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub tag: Option<String>,
-}
-
-#[derive(Default, Serialize, Deserialize, Debug)]
-pub struct AoriAccountBalanceParams {
-    pub address: String,
-    pub token: String,
-    pub chain_id: i64,
-    pub signature: Option<String>,
-}
-
-#[derive(Default, Serialize, Deserialize, Debug)]
-pub struct AoriAccountCreditParams {
-    pub address: String,
-    pub signature: Option<String>,
+pub struct AoriCancelOrderParams {
+    #[serde(rename = "orderHash")]
+    pub order_hash: String,
+    #[serde(rename = "apiKey")]
+    pub api_key: String,
 }
 
 #[derive(Default, Serialize, Deserialize, Debug)]
 pub struct AoriAccountOrdersParams {
-    pub signature: Option<String>,
-    pub offerer: String,
+    #[serde(rename = "apiKey")]
+    pub api_key: String,
 }
 
 #[derive(Default, Serialize, Deserialize, Debug)]
-pub struct AoriQuoteParams {
-    pub input_token: String,
-    pub output_token: String,
-    pub input_amount: Option<String>,
-    pub output_amount: Option<String>,
-    pub chain_id: i64,
+pub struct AoriAccountBalanceParams {
+    #[serde(rename = "apiKey")]
     pub api_key: String,
-    pub delay: Option<i64>,
+    pub token: String,
+    #[serde(rename = "chainId")]
+    pub chain_id: i64,
+}
+
+#[derive(Default, Serialize, Deserialize, Debug)]
+pub struct AoriViewOrderbookParams {
+    #[serde(skip_serializing_if = "Option::is_none", rename = "chainId")]
+    pub chain_id: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub query: Option<Query>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub side: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub limit: Option<i64>,
+    #[serde(rename = "apiKey")]
+    pub api_key: String,
 }
 
 #[derive(Default, Serialize, Deserialize, Debug)]
@@ -103,8 +91,10 @@ pub struct AoriRequestQuoteParams {
     pub input_amount: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none", rename = "outputAmount")]
     pub output_amount: Option<String>,
-    #[serde(rename = "chainId")]
-    pub chain_id: i64,
+    #[serde(rename = "inputChainId")]
+    pub input_chain_id: i64,
+    #[serde(rename = "outputChainId")]
+    pub output_chain_id: i64,
     #[serde(rename = "apiKey")]
     pub api_key: String,
 }
