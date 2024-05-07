@@ -4,8 +4,8 @@
 use crate::{request::*, AoriOrder};
 use alloy_primitives::{keccak256, B256};
 use alloy_serde_macro::{bytes, bytes_from_string};
-use ethers::signers::{LocalWallet};
 use alloy_sol_types::SolValue;
+use ethers::signers::LocalWallet;
 use ethers::{abi::parse_abi_str, utils::parse_bytes32_string};
 
 use super::get_order_hash;
@@ -69,7 +69,7 @@ impl AoriRequestBuilder {
         order_hash: B256,
         seat_id: i64,
     ) -> Result<AoriTakeOrderParams, Box<dyn std::error::Error>> {
-        let signature = self.signer.sign_hash(order_hash.0.into())?; 
+        let signature = self.signer.sign_hash(order_hash.0.into())?;
         let sig_hex = hex::encode(signature.to_vec());
 
         Ok(AoriTakeOrderParams {
