@@ -2,39 +2,26 @@
 // used for signing orders and stuff
 
 use crate::{request::*, AoriOrder};
-use alloy_primitives::keccak256;
-use alloy_signer::{Signer, Wallet};
+use alloy_primitives::{keccak256, B256};
+use alloy_serde_macro::{bytes, bytes_from_string};
 use alloy_sol_types::SolValue;
-use k256::ecdsa::SigningKey;
-use nom::AsBytes;
+use ethers::signers::LocalWallet;
+use ethers::{abi::parse_abi_str, utils::parse_bytes32_string};
+
+use super::get_order_hash;
 
 pub struct AoriRequestBuilder {
-    signer: Wallet<SigningKey>,
+    signer: LocalWallet,
 }
 
 impl AoriRequestBuilder {
+    /// Wraps around a Private Key / Wallet to sign off on trades
     pub fn new(pkey_str: &str) -> Result<Self, Box<dyn std::error::Error>> {
-        let wallet: Wallet<SigningKey> = pkey_str.parse().unwrap();
+        let wallet: LocalWallet = pkey_str.parse().unwrap();
         Ok(AoriRequestBuilder { signer: wallet })
     }
-    pub async fn create_auth_params(
-        &self,
-        manager: Option<String>,
-    ) -> Result<AoriAuthParams, Box<dyn std::error::Error>> {
-        let address = self.signer.address();
-        let address_bytes = address.as_bytes();
 
-        let signature = self.signer.sign_message(address_bytes).await?;
-        let sig = signature.as_bytes();
-        let sig_hex = hex::encode(sig);
-
-        Ok(AoriAuthParams {
-            address: address.to_checksum(None), /* possibly change this later to incorporate
-                                                 * chain ids */
-            signature: format!("0x{}", sig_hex),
-            manager,
-        })
-    }
+    /// Builds an RFQ request
     pub async fn build_rfq(
         &self,
         input_token: String,
@@ -47,12 +34,13 @@ impl AoriRequestBuilder {
         Ok(AoriRequestQuoteParams {
             input_token,
             output_token,
-            input_amount,
+            input_amount: input_amount.unwrap(),
             output_amount,
             chain_id,
             api_key,
         })
     }
+
     pub async fn make_order(
         &self,
         order: AoriOrder,
@@ -60,12 +48,11 @@ impl AoriRequestBuilder {
         seat_id: i64,
         tag: String,
     ) -> Result<AoriMakeOrderParams, Box<dyn std::error::Error>> {
-        let packed = order.abi_encode();
+        let packed = get_order_hash(order.clone());
         let hash = keccak256(packed);
 
-        let signature = self.signer.sign_hash(hash).await?;
-        let sig = signature.as_bytes();
-        let sig_hex = hex::encode(sig);
+        let signature = self.signer.sign_hash(hash.0.into())?;
+        let sig_hex = hex::encode(signature.to_vec());
 
         Ok(AoriMakeOrderParams {
             order,
@@ -79,15 +66,11 @@ impl AoriRequestBuilder {
     pub async fn take_order(
         &self,
         order: AoriOrder,
-        order_hash: &str,
+        order_hash: B256,
         seat_id: i64,
     ) -> Result<AoriTakeOrderParams, Box<dyn std::error::Error>> {
-        let packed = order.abi_encode();
-        let hash = keccak256(packed);
-
-        let signature = self.signer.sign_hash(hash).await?;
-        let sig = signature.as_bytes();
-        let sig_hex = hex::encode(sig);
+        let signature = self.signer.sign_hash(order_hash.0.into())?;
+        let sig_hex = hex::encode(signature.to_vec());
 
         Ok(AoriTakeOrderParams {
             order,
