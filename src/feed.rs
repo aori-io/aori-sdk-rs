@@ -1,4 +1,4 @@
-use crate::shared_types::AoriOrder;
+use crate::aori::shared_types::AoriOrder;
 use alloy_primitives::U256;
 use alloy_serde_macro::U256_from_u64;
 use serde::{Deserialize, Serialize};
@@ -15,6 +15,8 @@ pub enum AoriFeedEvents {
     OrderToExecute(Box<OrderToExecuteData>),
     QuoteRequested(Box<QuoteRequestedData>),
 }
+
+// TODO: remove
 #[derive(Clone, Serialize, Deserialize, PartialEq, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct QuoteRequestedData {
@@ -23,31 +25,33 @@ pub struct QuoteRequestedData {
     pub input_amount: String,
     pub chain_id: u64,
 }
-#[derive(Debug, Clone, Deserialize, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct OrderToExecuteData {
-    pub matching_hash: String,
-    pub matching: MatchingOrder,
-    pub matching_signature: String,
-    pub maker_order_hash: String,
-    pub maker_chain_id: u64,
-    pub maker_zone: String,
-    pub taker_order_hash: String,
-    pub taker_chain_id: u64,
-    pub taker_zone: String,
-    pub chain_id: u64,
-    pub to: String,
-    #[serde(deserialize_with = "U256_from_u64")]
-    pub value: U256,
-    pub data: String,
-    pub maker: String,
-    pub taker: String,
-    pub input_token: String,
-    pub input_amount: String,
-    pub output_token: String,
-    pub output_amount: String,
-}
 
+// TODO: remove
+// #[derive(Debug, Clone, Deserialize, Serialize)]
+// #[serde(rename_all = "camelCase")]
+// pub struct OrderToExecuteData {
+//     pub matching_hash: String,
+//     pub matching: MatchingOrder,
+//     pub matching_signature: String,
+//     pub maker_order_hash: String,
+//     pub maker_chain_id: u64,
+//     pub maker_zone: String,
+//     pub taker_order_hash: String,
+//     pub taker_chain_id: u64,
+//     pub taker_zone: String,
+//     pub chain_id: u64,
+//     pub to: String,
+//     pub value: U256,
+//     pub data: String,
+//     pub maker: String,
+//     pub taker: String,
+//     pub input_token: String,
+//     pub input_amount: String,
+//     pub output_token: String,
+//     pub output_amount: String,
+// }
+
+// TODO: get rid of
 #[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct MatchingOrder {

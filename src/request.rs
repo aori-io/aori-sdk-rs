@@ -110,35 +110,39 @@ pub struct AoriRequestQuoteParams {
     pub api_key: String,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Clone, Serialize, Deserialize, Debug)]
+pub struct AoriViewOrderbookQueryPair {
+    pub base: String,
+    pub quote: String,
+}
+
+#[derive(Clone, Serialize, Deserialize, Debug)]
 pub struct AoriViewOrderbookParams {
-    pub chain_id: Option<String>,
-    pub query: Option<AoriViewOrderbookQuery>,
-    pub side: Option<String>,
-    pub limit: Option<u32>,
-}
+    pub chain_id: Option<i64>,
+    pub query: Option<AoriViewOrderbookQueryPair>,
+    pub limit: Option<i64>,
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct AoriViewOrderbookQuery {
-    pub base: Option<String>,
-    pub quote: Option<String>,
-}
+    pub order_hash: Option<String>,
+    pub offerer: Option<String>,
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct AoriViewOrderbookResponse {
-    pub orders: Vec<OrderView>,
+    pub sort_by: Option<String>,
+    pub input_amount: Option<String>,
+    pub output_amount: Option<String>,
+
+    pub zone: Option<String>,
+    pub allow_stale_quotes: Option<bool>,
 }
 
 ///
 ///  Response Types
-/// 
+///
 
 #[derive(Clone, Serialize, Deserialize, Debug)]
 pub struct AoriPingRequest {
     pub id: i64,
     pub jsonrpc: String,
     pub method: String,
-    pub params: Vec<String>
+    pub params: Vec<String>,
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug)]
@@ -146,7 +150,7 @@ pub struct AoriViewOrderbookRequest {
     pub id: i64,
     pub jsonrpc: String,
     pub method: String,
-    pub params: Vec<AoriViewOrderbookParams>
+    pub params: Vec<AoriViewOrderbookParams>,
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug)]
@@ -154,7 +158,7 @@ pub struct AoriCancelOrderRequest {
     pub id: i64,
     pub jsonrpc: String,
     pub method: String,
-    pub params: Vec<AoriCancelOrderParams>
+    pub params: Vec<AoriCancelOrderParams>,
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug)]
@@ -162,7 +166,7 @@ pub struct AoriCancelAllOrdersRequest {
     pub id: i64,
     pub jsonrpc: String,
     pub method: String,
-    pub params: Vec<AoriCancelAllOrdersParams>
+    pub params: Vec<AoriCancelAllOrdersParams>,
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug)]
@@ -170,7 +174,7 @@ pub struct AoriAccountBalanceRequest {
     pub id: i64,
     pub jsonrpc: String,
     pub method: String,
-    pub params: Vec<AoriAccountBalanceParams>
+    pub params: Vec<AoriAccountBalanceParams>,
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug)]
@@ -178,7 +182,7 @@ pub struct AoriAccountOrdersRequest {
     pub id: i64,
     pub jsonrpc: String,
     pub method: String,
-    pub params: Vec<AoriAccountOrdersParams>
+    pub params: Vec<AoriAccountOrdersParams>,
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug)]
@@ -186,16 +190,15 @@ pub struct AoriRequestQuoteRequest {
     pub id: i64,
     pub jsonrpc: String,
     pub method: String,
-    pub params: Vec<AoriRequestQuoteParams>
+    pub params: Vec<AoriRequestQuoteParams>,
 }
-
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct AoriMakeOrderRequest {
     pub id: i64,
     pub jsonrpc: String,
     pub method: String,
-    pub params: Vec<AoriMakeOrderParams>
+    pub params: Vec<AoriMakeOrderParams>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -203,13 +206,13 @@ pub struct AoriTakeOrderRequest {
     pub id: i64,
     pub jsonrpc: String,
     pub method: String,
-    pub params: Vec<AoriTakeOrderParams>
+    pub params: Vec<AoriTakeOrderParams>,
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug)]
 pub struct AoriBroadcastParams {
     pub secret: String,
-    pub data: serde_json::Value
+    pub data: serde_json::Value,
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug)]
@@ -217,7 +220,7 @@ pub struct AoriBroadcastRequest {
     pub id: i64,
     pub jsonrpc: String,
     pub method: String,
-    pub params: Vec<AoriBroadcastParams>
+    pub params: Vec<AoriBroadcastParams>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -233,10 +236,11 @@ pub enum AoriRequest {
     ViewOrderbook(AoriViewOrderbookRequest),
 }
 
+// TODO: rename from AoriRequestin to AoriGeneralRequest
 #[derive(Clone, Serialize, Deserialize, Debug)]
 pub struct AoriRequestin {
     pub id: i64,
     pub jsonrpc: String,
     pub method: String,
-    pub params: serde_json::Value
+    pub params: serde_json::Value,
 }
