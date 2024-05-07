@@ -4,6 +4,9 @@ description = "Rust SDK for Aori"
 license = "MIT"
 version = "0.1.0"
 edition = "2021"
+documentation = "https://docs.rs/aori-rs"
+repository = "https://github.com/aori-io/aori-sdk-rs"
+homepage = "https://aori.com"
 
 [dependencies]
 alloy-primitives = { version = "0.7", default-features = false, features = [
