@@ -12,7 +12,7 @@ use tracing::error;
 
 use super::{
     constants::{ChainId, SUPPORTED_AORI_CHAINS},
-    get_order_signer, get_signer_address,
+    get_order_signer,
 };
 
 // abigen!(AoriV2, "src/aori/abi/AoriV2.json");
