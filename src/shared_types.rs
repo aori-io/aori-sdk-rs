@@ -179,6 +179,58 @@ pub struct DetailsToExecute {
     pub output_amount: U256,
 }
 
+// TODO: convert to rust
+// export interface SettledMatch {
+//     makerOrderHash?: string;
+//     takerOrderHash?: string;
+//     maker: string;
+//     taker: string;
+//     inputChainId: number;
+//     outputChainId: number;
+//     inputZone: string;
+//     outputZone: string;
+//     inputToken: string;
+//     outputToken: string;
+//     inputAmount: string;
+//     outputAmount: string;
+//     matchingHash: string;
+
+//     // Details from the input chain
+//     transactionHash?: string;
+//     blockNumber?: number;
+//     timestamp?: number;
+// }
+
+#[derive(Clone, Serialize, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct SettledMatch {
+    pub maker_order_hash: B256,
+    pub taker_order_hash: B256,
+    pub maker: Address,
+    pub taker: Address,
+    #[serde(serialize_with = "U256_as_u32", deserialize_with = "U256_from_u32")]
+    pub input_chain_id: U256,
+    #[serde(serialize_with = "U256_as_u32", deserialize_with = "U256_from_u32")]
+    pub output_chain_id: U256,
+    pub input_zone: Address,
+    pub output_zone: Address,
+    pub input_token: Address,
+    pub output_token: Address,
+    #[serde(serialize_with = "U256_as_String", deserialize_with = "U256_from_String")]
+    pub input_amount: U256,
+    #[serde(serialize_with = "U256_as_String", deserialize_with = "U256_from_String")]
+    pub output_amount: U256,
+    pub matching_hash: B256,
+
+    // Details from the input chain
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub transaction_hash: Option<B256>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub block_number: Option<U256>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub timestamp: Option<U256>,
+}
+
 pub fn deserialize_rate<'de, D>(deserializer: D) -> Result<String, D::Error>
 where
     D: Deserializer<'de>,

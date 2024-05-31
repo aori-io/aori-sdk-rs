@@ -1,4 +1,4 @@
-use crate::shared_types::AoriOrder;
+use crate::{shared_types::AoriOrder, SettledMatch};
 use alloy_primitives::U256;
 use alloy_serde_macro::U256_from_u64;
 use serde::{Deserialize, Serialize};
@@ -94,8 +94,13 @@ pub struct AoriFeedEventWrapper {
 #[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(tag = "type", content = "data")]
 pub enum AoriFeedEvents {
-    OrderToExecute(Box<DetailsToExecute>),
+    OrderToExecute(Box<OrderToExecuteData>),
+    SwapRequested(Box<OrderView>),
     QuoteRequested(Box<QuoteRequestedData>),
+    OrderCreated(Box<OrderView>),
+    OrderTaken(Box<OrderView>),
+    OrderCancelled(Box<OrderView>),
+    OrderFulfilled(Box<SettledMatch>)
 }
 
 #[derive(Clone, Serialize, Deserialize, PartialEq, Debug)]
@@ -105,6 +110,43 @@ pub struct QuoteRequestedData {
     pub output_token: String,
     pub input_amount: String,
     pub chain_id: u64,
+}
+
+#[derive(Debug, Deserialize, Serialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct MatchingOrder {
+    pub maker_order: AoriOrder,
+    pub taker_order: AoriOrder,
+    pub maker_signature: String,
+    pub taker_signature: String,
+    pub block_deadline: u64,
+    pub seat_number: u64,
+    pub seat_holder: String,
+    pub seat_percent_of_fees: u64,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct OrderToExecuteData {
+    pub matching_hash: String,
+    pub matching: MatchingOrder,
+    pub matching_signature: String,
+    pub maker_order_hash: String,
+    pub maker_chain_id: u64,
+    pub maker_zone: String,
+    pub taker_order_hash: String,
+    pub taker_chain_id: u64,
+    pub taker_zone: String,
+    pub chain_id: u64,
+    pub to: String,
+    pub value: U256,
+    pub data: String,
+    pub maker: String,
+    pub taker: String,
+    pub input_token: String,
+    pub input_amount: String,
+    pub output_token: String,
+    pub output_amount: String,
 }
 
 pub fn deserialize_aori_feed_event(json_data: &str) -> Result<AoriFeedEvents, serde_json::Error> {
